@@ -13,7 +13,7 @@ contract Printing {
     struct PrintingService {
         address account;
         uint numParts;
-        mapping(uint => Part) parts;
+        string[] parts; //uuids of parts
     }
 
     struct Part {
@@ -21,7 +21,6 @@ contract Printing {
         uint price;
         string material;
         address owner; //OEM
-        string uuid;
     }
 
     mapping(address => PrintingService) printingServices; //printing service address -> PrintingService
@@ -29,16 +28,14 @@ contract Printing {
     address adrCustomer;
     address adrOem;
 
-    function Printing() {
+    function Printing() payable {
         adrOem = msg.sender;
     }
 
     function giveRightToPrint(address adrOfPrintingService, string uuidOfPart) public {
-        uint index = getIndexOfPart(msg.sender, uuidOfPart);
-        var part = printingServices[msg.sender].parts[index];
-        if (msg.sender != part.owner) return;
-        var printingService = printingServices[adrOfPrintingService];
-        printingService.parts[printingService.numParts++] = printableParts[uuidOfPart];
+        if (msg.sender != printableParts[uuidOfPart].owner) return;
+        printingServices[adrOfPrintingService].numParts++;
+        printingServices[adrOfPrintingService].parts.push(uuidOfPart);
     }
 
     function registerSenderAsPrintingService() public {
@@ -58,7 +55,7 @@ contract Printing {
     function print(string uuidOfPart) public returns (string gcodeUrl, uint price, string material) {
         uint index = getIndexOfPart(msg.sender, uuidOfPart);
         if (index == printingServices[msg.sender].numParts) return; // part is not on the list of parts that the msg.sender is allowed to print
-        var part = printingServices[msg.sender].parts[index];
+        var part = printableParts[printingServices[msg.sender].parts[index]];
         gcodeUrl = part.gcodeUrl;
         price = part.price;
         material = part.material;
@@ -77,10 +74,10 @@ contract Printing {
         return true;
     }
 
-    function getIndexOfPart(address adrOfPrintingService, string uuidOfPart) view returns (uint i) {
+    function getIndexOfPart(address adrOfPrintingService, string uuidOfPart) returns (uint i) {
         var printingService = printingServices[adrOfPrintingService];
         for (i = 0; i < printingService.numParts; ++i) {
-            if (keccak256(printingService.parts[i].uuid) == keccak256(uuidOfPart)) {
+            if (keccak256(printingService.parts[i]) == keccak256(uuidOfPart)) {
                 return;
             }
         }
