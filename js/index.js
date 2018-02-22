@@ -36,33 +36,31 @@ var printingContract = web3.eth.contract([
 		"type": "function"
 	},
 	{
-		"constant": true,
-		"inputs": [],
-		"name": "part",
-		"outputs": [
+		"constant": false,
+		"inputs": [
 			{
-				"name": "gcodeUrl",
-				"type": "string"
-			},
-			{
-				"name": "price",
-				"type": "uint256"
-			},
-			{
-				"name": "material",
-				"type": "string"
-			},
-			{
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"name": "uuid",
+				"name": "uuidOfPart",
 				"type": "string"
 			}
 		],
+		"name": "getPrice",
+		"outputs": [
+			{
+				"name": "price",
+				"type": "uint256"
+			}
+		],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "registerSenderAsPrintingService",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -84,7 +82,7 @@ var printingContract = web3.eth.contract([
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [
 			{
 				"name": "adrOfPrintingService",
@@ -103,28 +101,64 @@ var printingContract = web3.eth.contract([
 			}
 		],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_gcodeUrl",
+				"type": "string"
+			},
+			{
+				"name": "_price",
+				"type": "uint256"
+			},
+			{
+				"name": "_material",
+				"type": "string"
+			},
+			{
+				"name": "_uuid",
+				"type": "string"
+			}
+		],
+		"name": "addPart",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "uuidOfPart",
+				"type": "string"
+			}
+		],
+		"name": "orderPrint",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "constructor"
 	}
 ]);
 
-var printing = printingContract.at('0xbbf289d846208c16edc8474705c748aff07732db');
-console.log(printing);
+var printingContractInstance = printingContract.at('0xbbf289d846208c16edc8474705c748aff07732db');
+console.log(printingContractInstance);
 var oemAccount = printingContract.at('0xca35b7d915458ef540ade6068dfe2f44e8fa733c');
 var printingService = printingContract.at('0x14723a09acff6d2a60dcdf7aa4aff308fddc160c');
 var customer = printingContract.at('0x4b0897b0513fdc7c541b6d9d7e929c4e5364d2db');
-
-/*
-coursetro.getInstructor(function(error, result){
-	if(!error)
-	{
-		$("#instructor").html(result[0]+' ('+result[1]+' years old)');
-		console.log(result);
-	}
-	else
-		console.error(error);
-});
-
-$("#button").click(function() {
-	coursetro.setInstructor($("#name").val(), $("#age").val());
-});*/
